@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
                 self.items.addItem(items[i]["name"])
                 self.items.setItemData(c, self.item_dict[i]["index"])
                 self.items.setItemIcon(c, QIcon(os.path.join(items[i]["path"])))
-                print(self.item_dict[i]["path"])
+                # print(self.item_dict[i]["path"])
                 self.items.setIconSize(QSize(self.item_dict[i]["imageW"], self.item_dict[i]["imageH"]))
                 c += 1
 
@@ -61,11 +61,13 @@ class Ui_MainWindow(object):
 
     def add_button_clicked(self):
         if self.items.currentData() != "Items":
+            print(f"Adding {self.items.currentData()}")
             ITEMS_TO_ADD[self.item_dict[self.items.currentData()]["slot"]] = self.item_dict[self.items.currentData()]
             pprint(ITEMS_TO_ADD, indent=4)
 
     def remove_button_clicked(self):
         if self.items.currentData() != "Items":
+            print(f"Removing {self.items.currentData()}")
             ITEMS_TO_ADD[self.item_dict[self.items.currentData()]["slot"]] = []
             pprint(ITEMS_TO_ADD, indent=4)
 
@@ -109,8 +111,8 @@ def get_items_from_xmldata(f, l):
             "imageW": imageW,
             "slot": slot
         }
-    # print(items)
     return items
+
 def main():
     try:
         if os.environ["BUILD_ENV"] == "prod" or os.path.exists("release.version"):
@@ -119,8 +121,8 @@ def main():
             config = app_config["dev"]
     except:
         config = app_config["dev"]
-
-    nd_xml = ET.parse(os.path.join(config.ND_FOLDER, "data", "necrodancer.xml")).getroot()
+    print(os.path.join(config.ND_FOLDER, config.DATA_FOLDER, "necrodancer.xml"))
+    nd_xml = ET.parse(os.path.join(config.ND_FOLDER, config.DATA_FOLDER, "necrodancer.xml")).getroot()
     xml_enums = {
         "items": 0,
         "enemies": 1,
