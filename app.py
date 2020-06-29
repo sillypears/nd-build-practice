@@ -1,34 +1,76 @@
 import os, sys
 import xml.etree.ElementTree as ET
+from pprint import pprint
 
 from config import app_config
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QComboBox, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 
 ALLOWED_ITEMS = ["weapon", "scroll", "armor", "feet", "head", "bag", "misc", "hud", "spell", "charm", "ring", "shovel", "pickaxe", "throwing", "familiar", "tome", "torch", "holy"]
+ITEMS_TO_ADD = {
+    "shovel": [],
+    "weapon": [],
+    "body": [],
+    "misc": [],
+    "feet": [],
+    "ring": [],
+    "torch": [],
+    "spell": []
+}
 
 class Ui_MainWindow(object):
     def setup_ui(self, MainWindow, items, config):
+        self.item_dict = items
         MainWindow.setObjectName("Ahhh")
-        MainWindow.resize(640, 480)
+        MainWindow.resize(480, 240)
+
+        base = 20
+        offset = 40
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralpark")
         self.items = QComboBox(self.centralwidget)
         self.items.resize(200, 40)
-        self.items.move(10, 10)
+        self.items.move(base+1, base)
         self.items.setObjectName("items")
-        self.items.addItem("Items")
-        c = 1
-        for i in items:
+        self.items.setPlaceholderText("Items")
+        c = 0
+        for i in self.item_dict:
             if items[i]["index"].split("_")[0] in ALLOWED_ITEMS:
                 self.items.addItem(items[i]["name"])
+                self.items.setItemData(c, self.item_dict[i]["index"])
                 self.items.setItemIcon(c, QIcon(os.path.join(items[i]["path"])))
-                print(items[i]["path"])
-                self.items.setIconSize(QSize(items[i]["imageW"], items[i]["imageH"]))
+                print(self.item_dict[i]["path"])
+                self.items.setIconSize(QSize(self.item_dict[i]["imageW"], self.item_dict[i]["imageH"]))
                 c += 1
 
+        self.addButton = QPushButton("Add!", self.centralwidget)
+        self.addButton.resize(80, 40)
+        self.addButton.move(base, (base+offset+1))
+        self.addButton.clicked.connect(self.add_button_clicked)
+        
+        self.removeButton = QPushButton("Remove :(", self.centralwidget)
+        self.removeButton.resize(80, 40)
+        self.removeButton.move(base+(offset*2), (base+offset+1))
+        self.removeButton.clicked.connect(self.remove_button_clicked)
+        
+        self.buildButton = QPushButton("Build!", self.centralwidget)
+        self.buildButton.resize(80, offset)
+        self.buildButton.move(base, (base+(offset*2)+1))
+
+    def add_button_clicked(self):
+        if self.items.currentData() != "Items":
+            ITEMS_TO_ADD[self.item_dict[self.items.currentData()]["slot"]] = self.item_dict[self.items.currentData()]
+            pprint(ITEMS_TO_ADD, indent=4)
+
+    def remove_button_clicked(self):
+        if self.items.currentData() != "Items":
+            ITEMS_TO_ADD[self.item_dict[self.items.currentData()]["slot"]] = []
+            pprint(ITEMS_TO_ADD, indent=4)
+
+    def build_button_clicked(self):
+        pass
 
 def get_items_from_xmldata(f, l):
     """get_items_from_xmldata builds out a dictionary with items from the xml file
@@ -69,8 +111,7 @@ def get_items_from_xmldata(f, l):
         }
     # print(items)
     return items
-
-if __name__ == "__main__":
+def main():
     try:
         if os.environ["BUILD_ENV"] == "prod" or os.path.exists("release.version"):
             config = app_config["prod"]
@@ -87,11 +128,17 @@ if __name__ == "__main__":
         "modes": 3,
     }
     items = get_items_from_xmldata(nd_xml[xml_enums["items"]], os.path.join("data", "edited"))
-
+ 
     app = QApplication([])
+    app.setObjectName("Build Practice")
+
     # MainWindow = QMainWindow()
-    window = QWidget()
+    window = QWidget()  
+    window.setWindowTitle("NecroDancer Build Practice")
     ui = Ui_MainWindow()
     ui.setup_ui(window, items, config)
-    window.show()
-    sys.exit(app.exec_())
+    window.show()  
+    app.exec_()
+
+if __name__ == "__main__":
+    sys.exit(main())
