@@ -29,7 +29,17 @@ class Ui_MainWindow(object):
                 self.items.setIconSize(QSize(items[i]["imageW"], items[i]["imageH"]))
                 c += 1
 
+
 def get_items_from_xmldata(f, l):
+    """get_items_from_xmldata builds out a dictionary with items from the xml file
+
+    Args:
+        f (Element): This is the data from the xml for items   
+        l (path): This is the path to the folder that houses the data for images and xml file
+
+    Returns:
+        dict: dict containing the processed data from the items section of the xml file
+    """
     items = {}
     for i in f:
         imageH = 24
@@ -76,7 +86,7 @@ if __name__ == "__main__":
         "characters": 2,
         "modes": 3,
     }
-    items = get_items_from_xmldata(nd_xml[xml_enums["items"]], os.path.join(config.ND_FOLDER, "data", "edited"))
+    items = get_items_from_xmldata(nd_xml[xml_enums["items"]], os.path.join("data", "edited"))
 
     app = QApplication([])
     # MainWindow = QMainWindow()
