@@ -35,7 +35,7 @@ def get_items_from_xmldata(f, l):
 
     Args:
         f (Element): This is the data from the xml for items   
-        l (path): This is the path to the folder that houses the data for images and xml file
+        l (str): This is the path to the folder that houses the data for images and xml file
 
     Returns:
         dict: dict containing the processed data from the items section of the xml file
