@@ -7,7 +7,7 @@ class Config(object):
     DEBUG = False
 
 class DevelopmentConfig(Config):
-    ND_FOLDER = "test_data"
+    ND_FOLDER = "testdata"
     DEBUG = True
 
 
